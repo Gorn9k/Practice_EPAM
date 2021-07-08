@@ -1,10 +1,10 @@
-package org.com.Entity;
+package org.com.entity;
 
 import lombok.Builder;
-import lombok.ToString;
+import lombok.Data;
 
+@Data
 @Builder
-@ToString
 public class Metal {
 
     private Long Id;

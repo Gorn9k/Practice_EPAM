@@ -1,8 +1,9 @@
-package org.com.View;
+package org.com.view;
 
-import org.com.Controller.MetalController;
-import org.com.Entity.Metal;
+import org.com.controller.MetalController;
+import org.com.entity.Metal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Scanner;
@@ -35,18 +36,23 @@ public class MetalView {
             System.out.println("\nВыберите действие, которое вы хотите совершить:\n" +
                     "1. Получить полный перечень\n2. Получить информацию о конкретном металле по Id\n" +
                     "3. Выйти");
-            switch (scanner.nextInt()) {
-                case 1:
-                    showAllMetals();
-                    break;
-                case 2:
-                    showMetalById();
-                    break;
-                case 3:
-                    proceed = false;
-                    break;
-                default:
-                    System.out.println("\nНекорректное число! Введите число от 1 до 3");
+            try {
+                switch (scanner.nextInt()) {
+                    case 1:
+                        showAllMetals();
+                        break;
+                    case 2:
+                        showMetalById();
+                        break;
+                    case 3:
+                        proceed = false;
+                        break;
+                    default:
+                        System.out.println("\nНекорректное число! Введите число от 1 до 3");
+                }
+            }
+            catch (AccessDeniedException accessDeniedException){
+                System.out.println("\nОшибка доступа");
             }
             if (proceed) {
                 System.out.println("\nХотите продолжить?\n1. Да\n2. Нет");

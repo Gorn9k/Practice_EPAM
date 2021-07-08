@@ -1,16 +1,16 @@
-package org.com.Entity;
+package org.com.entity;
 
 import lombok.Builder;
-import lombok.ToString;
-
+import lombok.Data;
 import java.util.Date;
 
+@Data
 @Builder
-@ToString
 public class Ingot {
 
     private Date Date;
     private Long MetalID;
+    private Double Nominal;
     private Double NoCertificateDollars;
     private Double NoCertificateRubles;
     private Double CertificateDollars;

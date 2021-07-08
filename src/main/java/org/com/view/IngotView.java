@@ -1,8 +1,9 @@
-package org.com.View;
+package org.com.view;
 
-import org.com.Controller.IngotController;
-import org.com.Entity.Ingot;
+import org.com.controller.IngotController;
+import org.com.entity.Ingot;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Scanner;
@@ -45,18 +46,23 @@ public class IngotView {
             System.out.println("\nВыберите действие, которое вы хотите совершить:\n" +
                     "1. Получить цены на драгоценные металлы в виде банковских слитков\n" +
                     "2. Получить цены на конкретный металл в виде банковских слитков\n3. Выйти");
-            switch (scanner.nextInt()) {
-                case 1:
-                    showAllIngotsOnMetalsByDate();
-                    break;
-                case 2:
-                    showIngotsOnMetalsByIdAndDate();
-                    break;
-                case 3:
-                    proceed = false;
-                    break;
-                default:
-                    System.out.println("\nНекорректное число! Введите число от 1 до 3");
+            try {
+                switch (scanner.nextInt()) {
+                    case 1:
+                        showAllIngotsOnMetalsByDate();
+                        break;
+                    case 2:
+                        showIngotsOnMetalsByIdAndDate();
+                        break;
+                    case 3:
+                        proceed = false;
+                        break;
+                    default:
+                        System.out.println("\nНекорректное число! Введите число от 1 до 3");
+                }
+            }
+            catch (AccessDeniedException accessDeniedException){
+                System.out.println("\nОшибка доступа");
             }
             if (proceed) {
                 System.out.println("\nХотите продолжить?\n1. Да\n2. Нет");

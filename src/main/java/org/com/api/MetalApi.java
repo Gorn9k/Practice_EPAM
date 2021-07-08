@@ -1,6 +1,6 @@
-package org.com.Api;
+package org.com.api;
 
-import org.com.Entity.Metal;
+import org.com.entity.Metal;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
