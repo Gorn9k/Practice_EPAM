@@ -1,0 +1,19 @@
+drop database if exists `users_BD`;
+CREATE DATABASE  `users_BD` ;
+USE `users_BD`;
+
+CREATE TABLE `users` (
+  `id` int not null auto_increment,
+  `Login` varchar(15) NOT NULL unique,
+  `Password` varchar(64) NOT NULL unique,
+  `Authority` varchar(10) default "ROLE_USER",
+  
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4  COLLATE utf8mb4_general_ci;
+
+LOCK TABLES `users` WRITE;
+
+INSERT INTO `users` (Login, Password, Authority) values 
+('admin', '$2a$10$jrryFNptnoGWwyWhxc47eeeHpin/LPOut7J221Xv4DB3qTswVcvJS', 'ROLE_ADMIN');
+
+UNLOCK TABLES;

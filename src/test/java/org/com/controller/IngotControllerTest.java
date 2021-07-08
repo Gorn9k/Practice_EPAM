@@ -2,9 +2,16 @@ package org.com.controller;
 
 import org.com.Application;
 import org.com.entity.Ingot;
+import org.com.security.AuthenticationManagerImpl;
 import org.junit.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -19,6 +26,13 @@ public class IngotControllerTest {
     public static void setUp() throws Exception {
         context = SpringApplication.run(Application.class);
         ingotController = context.getBean(IngotController.class);
+
+        AuthenticationManager authenticationManager = context.getBean(AuthenticationManagerImpl.class);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken("admin", "admin"));
+        SecurityContext sc = SecurityContextHolder.getContext();
+        sc.setAuthentication(authentication);
+
         actual = Ingot.builder()
                 .Date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2016-07-01 03:00:00"))
                 .MetalID(0L)

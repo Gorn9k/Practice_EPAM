@@ -68,12 +68,16 @@ public class UserView {
                                 .password(password)
                                 .authority("ROLE_ADMIN")
                                 .build());
+                    break;
                 case 2:
                     userController.saveUser(User.builder()
                                 .login(login)
                                 .password(password)
                                 .authority("ROLE_USER")
                                 .build());
+                    break;
+                default:
+                    System.out.println("\nНекорректное число! Введите число от 1 до 2");
             }
             System.out.println("\nРегистрация пользователя прошла успешно!");
         }

@@ -13,12 +13,12 @@ public class MetalController {
     @Autowired
     private MetalApi metalAPI;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public List<Metal> getAllMetals(){
         return metalAPI.getAll();
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Metal getMetalById(Long id){
         return metalAPI.getById(id);
     }
