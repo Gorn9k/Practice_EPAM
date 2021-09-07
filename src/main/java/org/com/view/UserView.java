@@ -14,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,6 +40,7 @@ public class UserView {
             System.out.println(userController.getUserById(scanner.nextLong()).toString());
         } catch (Exception e){
             System.out.println("\nНекорректно введен Id или же пользователь с таким идентификатором отсутствует");
+            scanner.nextLine();
         }
     }
 
@@ -61,23 +64,32 @@ public class UserView {
         });
         if (!exception.get()){
             System.out.println("\nВыберите роль (права доступа) пользователя:\n1. Admin\n2. User");
-            switch (scanner.nextInt()){
-                case 1:
-                    userController.saveUser(User.builder()
+            try {
+                switch (scanner.nextInt()) {
+                    case 1:
+                        userController.saveUser(User.builder()
                                 .login(login)
                                 .password(password)
                                 .authority("ROLE_ADMIN")
                                 .build());
-                    break;
-                case 2:
-                    userController.saveUser(User.builder()
+                        break;
+                    case 2:
+                        userController.saveUser(User.builder()
                                 .login(login)
                                 .password(password)
                                 .authority("ROLE_USER")
                                 .build());
-                    break;
-                default:
-                    System.out.println("\nНекорректное число! Введите число от 1 до 2");
+                        break;
+                    default:
+                        System.out.println("\nНекорректное число! Введите число от 1 до 2");
+                        exception.set(true);
+                        return;
+                }
+            } catch (InputMismatchException inputMismatchException){
+                System.out.println("\nОшибка! Необходимо ввести число.");
+                scanner.nextLine();
+                exception.set(true);
+                return;
             }
             System.out.println("\nРегистрация пользователя прошла успешно!");
         }
@@ -92,58 +104,67 @@ public class UserView {
                 "\n4. Выйти");
         String login = null;
         String password = null;
-        switch (scanner.nextInt()) {
-            case 1:
-                System.out.println("\nВведите новое имя пользователя:");
-                login = scanner.next();
-                users = userController.getAllUsers();
-                String finalLogin = login;
-                users.forEach(user -> {
-                    if (user.getLogin().equals(finalLogin)) {
-                        System.out.println("\nОшибка! Такое имя уже существует.");
-                        exception.set(true);
-                        return;
-                    }
-                });
-                break;
-            case 2:
-                System.out.println("\nВведите новый пароль:");
-                password = scanner.next();
-                users = userController.getAllUsers();
-                String finalPassword = password;
-                users.forEach(user -> {
-                    if (new BCryptPasswordEncoder().matches(finalPassword, user.getPassword())){
-                        System.out.println("\nОшибка! Такой пароль уже существует.");
-                        exception.set(true);
-                        return;
-                    }
-                });
-                break;
-            case 3:
-                System.out.println("\nВведите новое имя пользователя:");
-                login = scanner.next();
-                System.out.println("Введите новый пароль:");
-                password = scanner.next();
-                users = userController.getAllUsers();
-                String finalLogin1 = login;
-                String finalPassword1 = password;
-                users.forEach(user -> {
-                    if (user.getLogin().equals(finalLogin1)) {
-                        System.out.println("\nОшибка! Такое имя уже существует.");
-                        exception.set(true);
-                        return;
-                    }
-                    if (new BCryptPasswordEncoder().matches(finalPassword1, user.getPassword())){
-                        System.out.println("\nОшибка! Такой пароль уже существует.");
-                        exception.set(true);
-                        return;
-                    }
-                });
-                break;
-            case 4:
-                break;
-            default:
-                System.out.println("\nНекорректное число! Введите число от 1 до 4");
+        try {
+            switch (scanner.nextInt()) {
+                case 1:
+                    System.out.println("\nВведите новое имя пользователя:");
+                    login = scanner.next();
+                    users = userController.getAllUsers();
+                    String finalLogin = login;
+                    users.forEach(user -> {
+                        if (user.getLogin().equals(finalLogin)) {
+                            System.out.println("\nОшибка! Такое имя уже существует.");
+                            exception.set(true);
+                            return;
+                        }
+                    });
+                    break;
+                case 2:
+                    System.out.println("\nВведите новый пароль:");
+                    password = scanner.next();
+                    users = userController.getAllUsers();
+                    String finalPassword = password;
+                    users.forEach(user -> {
+                        if (new BCryptPasswordEncoder().matches(finalPassword, user.getPassword())) {
+                            System.out.println("\nОшибка! Такой пароль уже существует.");
+                            exception.set(true);
+                            return;
+                        }
+                    });
+                    break;
+                case 3:
+                    System.out.println("\nВведите новое имя пользователя:");
+                    login = scanner.next();
+                    System.out.println("Введите новый пароль:");
+                    password = scanner.next();
+                    users = userController.getAllUsers();
+                    String finalLogin1 = login;
+                    String finalPassword1 = password;
+                    users.forEach(user -> {
+                        if (user.getLogin().equals(finalLogin1)) {
+                            System.out.println("\nОшибка! Такое имя уже существует.");
+                            exception.set(true);
+                            return;
+                        }
+                        if (new BCryptPasswordEncoder().matches(finalPassword1, user.getPassword())) {
+                            System.out.println("\nОшибка! Такой пароль уже существует.");
+                            exception.set(true);
+                            return;
+                        }
+                    });
+                    break;
+                case 4:
+                    exception.set(true);
+                    break;
+                default:
+                    System.out.println("\nНекорректное число! Введите число от 1 до 4");
+                    exception.set(true);
+            }
+        } catch (InputMismatchException inputMismatchException){
+            System.out.println("\nОшибка! Необходимо ввести число.");
+            scanner.nextLine();
+            exception.set(true);
+            return;
         }
         if (!exception.get()) {
             userController.editUser(User.builder()
@@ -165,6 +186,7 @@ public class UserView {
             System.out.println("\nУдаление прошло успешно!");
         } catch (Exception e){
             System.out.println("\nНекорректно введен Id или же пользователь с таким идентификатором отсутствует");
+            scanner.nextLine();
         }
     }
 
@@ -191,14 +213,8 @@ public class UserView {
         }
         SecurityContext sc = SecurityContextHolder.getContext();
         sc.setAuthentication(authentication);
-        if(sc.getAuthentication().isAuthenticated()) {
-            System.out.println("\nLogin successful!\nHello, " + login + "!");
-            return true;
-        }
-        else {
-            System.out.println("\nBad credentials!");
-            return false;
-        }
+        System.out.println("\nАутентификация прошла успешно!\nЗдравствуйте, " + login + "!");
+        return true;
     }
 
     public void logout(){
@@ -210,91 +226,96 @@ public class UserView {
         boolean wasLogout = false;
         while (proceed) {
             exception.set(false);
-            if (SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString().equals("[ROLE_ADMIN]")) {
-                System.out.println("\nВыберите действие, которое вы хотите совершить:" +
-                        "\n1. Получить информацию вашего аккаунта" +
-                        "\n2. Изменить данные вашего аккаунта" +
-                        "\n3. Получить список пользователей" +
-                        "\n4. Получить пользователя по Id" +
-                        "\n5. Создать пользователя" +
-                        "\n6. Удалить пользователя" +
-                        "\n7. Выйти" +
-                        "\n8. Выйти из системы");
-                switch (scanner.nextInt()) {
-                    case 1:
-                        showInfoAboutYourAcc();
-                        break;
-                    case 2:
-                        edit_User();
-                        if (!exception.get()) {
+            try {
+                if (SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString().equals("[ROLE_ADMIN]")) {
+                    System.out.println("\nВыберите действие, которое вы хотите совершить:" +
+                            "\n1. Получить информацию вашего аккаунта" +
+                            "\n2. Изменить данные вашего аккаунта" +
+                            "\n3. Получить список пользователей" +
+                            "\n4. Получить пользователя по Id" +
+                            "\n5. Создать пользователя" +
+                            "\n6. Удалить пользователя" +
+                            "\n7. Выйти из профиля" +
+                            "\n8. Выйти из системы");
+                    switch (scanner.nextInt()) {
+                        case 1:
+                            showInfoAboutYourAcc();
+                            break;
+                        case 2:
+                            edit_User();
+                            if (!exception.get()) {
+                                wasLogout = true;
+                                proceed = false;
+                            }
+                            break;
+                        case 3:
+                            showAllUsers();
+                            break;
+                        case 4:
+                            showUserById();
+                            break;
+                        case 5:
+                            save_User();
+                            break;
+                        case 6:
+                            delete_User();
+                            break;
+                        case 7:
+                            proceed = false;
+                            break;
+                        case 8:
+                            logout();
                             wasLogout = true;
                             proceed = false;
-                        }
-                        break;
-                    case 3:
-                        showAllUsers();
-                        break;
-                    case 4:
-                        showUserById();
-                        break;
-                    case 5:
-                        save_User();
-                        break;
-                    case 6:
-                        delete_User();
-                        break;
-                    case 7:
-                        proceed = false;
-                        break;
-                    case 8:
-                        logout();
-                        wasLogout = true;
-                        proceed = false;
-                        break;
-                    default:
-                        System.out.println("\nНекорректное число! Введите число от 1 до 7");
-                }
-            }
-            else {
-                System.out.println("\nВыберите действие, которое вы хотите совершить:" +
-                        "\n1. Получить информацию вашего аккаунта" +
-                        "\n2. Изменить данные вашего аккаунта" +
-                        "\n3. Выйти" +
-                        "\n4. Выйти из системы");
-                switch (scanner.nextInt()) {
-                    case 1:
-                        showInfoAboutYourAcc();
-                        break;
-                    case 2:
-                        edit_User();
-                        if (!exception.get()) {
+                            break;
+                        default:
+                            System.out.println("\nНекорректное число! Введите число от 1 до 7");
+                    }
+                } else {
+                    System.out.println("\nВыберите действие, которое вы хотите совершить:" +
+                            "\n1. Получить информацию вашего аккаунта" +
+                            "\n2. Изменить данные вашего аккаунта" +
+                            "\n3. Выйти из профиля" +
+                            "\n4. Выйти из системы");
+                    switch (scanner.nextInt()) {
+                        case 1:
+                            showInfoAboutYourAcc();
+                            break;
+                        case 2:
+                            edit_User();
+                            if (!exception.get()) {
+                                wasLogout = true;
+                                proceed = false;
+                            }
+                            break;
+                        case 3:
+                            proceed = false;
+                            break;
+                        case 4:
+                            logout();
                             wasLogout = true;
                             proceed = false;
-                        }
-                        break;
-                    case 3:
-                        proceed = false;
-                        break;
-                    case 4:
-                        logout();
-                        wasLogout = true;
-                        proceed = false;
-                        break;
-                    default:
-                        System.out.println("\nНекорректное число! Введите число от 1 до 4");
+                            break;
+                        default:
+                            System.out.println("\nНекорректное число! Введите число от 1 до 4");
+                    }
                 }
-            }
-            if (proceed) {
-                System.out.println("\nХотите продолжить?\n1. Да\n2. Нет");
-                switch (scanner.nextInt()) {
-                    case 1:
-                        break;
-                    case 2:
-                        proceed = false;
-                        break;
-                    default:
-                        System.out.println("\nНекорректное число! Введите число от 1 до 2");
+                if (proceed) {
+                    System.out.println("\nХотите продолжить?\n1. Да\n2. Нет");
+                    switch (scanner.nextInt()) {
+                        case 1:
+                            break;
+                        case 2:
+                            proceed = false;
+                            break;
+                        default:
+                            System.out.println("\nНекорректное число! Введите число от 1 до 2");
+                    }
                 }
+            } catch (InputMismatchException inputMismatchException){
+                System.out.println("\nОшибка! Необходимо ввести число.");
+                scanner.nextLine();
+                return false;
             }
         }
         return wasLogout;
